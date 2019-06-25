@@ -158,6 +158,12 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
             invalidate()
         }
 
+    var itemHeightPadding: Int = 0
+        set(value) {
+            field = value
+            requestLayout()
+            invalidate()
+        }
     private var itemHeight: Int = 0
     private var halfItemHeight: Int = 0
 
@@ -401,7 +407,7 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
 
         halfWheelHeight = rectDrawn.height() / 2
 
-        itemHeight = rectDrawn.height() / visibleItemCount
+        itemHeight = (rectDrawn.height() / visibleItemCount) + itemHeightPadding
         halfItemHeight = itemHeight / 2
 
         computeFlingLimitY()
@@ -614,8 +620,8 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
                 if (null == tracker)
                     tracker = VelocityTracker.obtain()
                 else
-                    tracker!!.clear()
-                tracker!!.addMovement(event)
+                    tracker?.clear()
+                tracker?.addMovement(event)
                 if (!scroller.isFinished) {
                     scroller.abortAnimation()
                     isForceFinishScroll = true
@@ -629,12 +635,9 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
                     return true
                 }
                 isClick = false
-                tracker!!.addMovement(event)
-                if (null != onWheelChangeListener)
-                    onWheelChangeListener!!.onWheelScrollStateChanged(SCROLL_STATE_DRAGGING)
+                tracker?.addMovement(event)
+                onWheelChangeListener?.onWheelScrollStateChanged(SCROLL_STATE_DRAGGING)
 
-                // 滚动内容
-                // Scroll WheelPicker's content
                 val move = event.y - lastPointY
                 if (Math.abs(move) < 1) return true
                 scrollOffsetY += move.toInt()
@@ -645,9 +648,9 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
                 if (null != parent)
                     parent.requestDisallowInterceptTouchEvent(false)
                 if (isClick) return true
-                tracker!!.addMovement(event)
+                tracker?.addMovement(event)
 
-                tracker!!.computeCurrentVelocity(1000, maximumVelocity.toFloat())
+                tracker?.computeCurrentVelocity(1000, maximumVelocity.toFloat())
 
                 isForceFinishScroll = false
                 val velocity = tracker!!.yVelocity.toInt()
@@ -668,7 +671,7 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
                         scroller.finalY = minFlingY
                 mHandler.post(this)
                 if (null != tracker) {
-                    tracker!!.recycle()
+                    tracker?.recycle()
                     tracker = null
                 }
             }
@@ -676,7 +679,7 @@ class WheelPicker<T> constructor(context: Context, attrs: AttributeSet? = null) 
                 if (null != parent)
                     parent.requestDisallowInterceptTouchEvent(false)
                 if (null != tracker) {
-                    tracker!!.recycle()
+                    tracker?.recycle()
                     tracker = null
                 }
             }
